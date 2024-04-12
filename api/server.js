@@ -9,14 +9,14 @@ const server = express();
 
 server.use(express.json());
 
-//catch all
+// Correctly place route-specific middleware before the catch-all
+server.use('/api/projects', projectRouter);  // Adjusted the path to '/api/projects' if that's the intended path
+server.use('/api/resources', resourceRouter);
+server.use('/api/tasks', taskRouter);
+
+// Catch-all route for unhandled requests, now placed last
 server.use('*', (req, res) => {
-
-    res.json({ api: 'api up' });
-  })
-
-server.use('/api/project' , projectRouter )  
-server.use('/api/resource', resourceRouter) //15:59
-server.use('/api/task', taskRouter) //16:00
+  res.status(404).json({ message: 'Endpoint not found' });  // Sending a 404 status for unhandled endpoints
+});
 
 module.exports = server;
