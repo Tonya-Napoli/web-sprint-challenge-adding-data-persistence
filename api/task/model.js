@@ -1,13 +1,15 @@
-// build your `Task` model here
 const db = require('../../data/dbConfig');
 
 async function add(taskData) {
     const [newTask] = await db('tasks').insert(taskData, '*');
-    return newTask;
+    return {
+        ...newTask,
+        task_completed: newTask.task_completed === 1  // Ensure consistent boolean conversion on creation
+    };
 }
 
 async function getAllWithProjectDetails() {
-    return db('tasks as t')
+    const tasks = await db('tasks as t')
         .join('projects as p', 't.project_id', 'p.project_id')
         .select(
             't.task_id',
@@ -17,11 +19,11 @@ async function getAllWithProjectDetails() {
             't.project_id',
             'p.project_name',
             'p.project_description'
-        )
-        .then(tasks => tasks.map(task => ({
-            ...task,
-            task_completed: task.task_completed === 1
-        })));
+        );
+    return tasks.map(task => ({
+        ...task,
+        task_completed: task.task_completed === 1  // Convert integer to boolean
+    }));
 }
 
 async function getTaskByID(task_id) {
@@ -30,14 +32,18 @@ async function getTaskByID(task_id) {
         .first();
 
     if (task) {
-        task.task_completed = task.task_completed === 1; // Convert integer to boolean
+        return {
+            ...task,
+            task_completed: task.task_completed === 1  // Convert integer to boolean
+        };
     }
 
-    return task;
+    return null;
 }
 
 module.exports = {
-    getTaskByID,
     add,
-    getAllWithProjectDetails
+    getAllWithProjectDetails,
+    getTaskByID
 };
+

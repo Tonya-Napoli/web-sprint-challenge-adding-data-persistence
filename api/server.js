@@ -10,7 +10,7 @@ const server = express();
 server.use(express.json());
 
 // Correctly place route-specific middleware before the catch-all
-server.use('/api/projects', projectRouter);  // Adjusted the path to '/api/projects' if that's the intended path
+server.use('/api/projects', projectRouter); 
 server.use('/api/resources', resourceRouter);
 server.use('/api/tasks', taskRouter);
 
